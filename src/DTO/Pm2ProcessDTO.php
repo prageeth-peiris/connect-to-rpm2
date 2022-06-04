@@ -8,7 +8,7 @@ use Spatie\DataTransferObject\DataTransferObject;
 class Pm2ProcessDTO extends  DataTransferObject
 {
 
-    #[MapFrom('name')]
+    #[MapFrom('pm2_env.name')]
     public int $processName;
 
     #[MapFrom('pm2_env.status')]

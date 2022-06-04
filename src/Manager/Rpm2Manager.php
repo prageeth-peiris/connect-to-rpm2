@@ -2,6 +2,7 @@
 
 namespace PrageethPeiris\ConnectToRpm2\Manager;
 
+use Illuminate\Http\Client\Response;
 use Illuminate\Support\Collection;
 use PrageethPeiris\ConnectToRpm2\Clients\Rpm2Client;
 use PrageethPeiris\ConnectToRpm2\ConnectToRpm2Facade;
@@ -32,17 +33,7 @@ class Rpm2Manager
 
         $response = ConnectToRpm2Facade::start($this->rpm2Client);
 
-            if($response->status() === 200 ){
-
-                $pm2Process =  new Pm2ProcessDTO($response->collect()->first());
-
-                return $pm2Process;
-
-            }else{
-                throw new \HttpException("RPM2 Server Failed to process the request :  {$response->status()}");
-
-
-            }
+        return $this->handleResponse($response);
 
 
     }
@@ -54,15 +45,7 @@ class Rpm2Manager
 
         $response = ConnectToRpm2Facade::stop($this->rpm2Client);
 
-        if($response->status() == 200){
-
-            $pm2Process =  new Pm2ProcessDTO($response->collect()->first());
-            return $pm2Process;
-
-        }else{
-
-            throw new \HttpException("RPM2 Server Failed to process the request :  {$response->status()}");
-        }
+        return $this->handleResponse($response);
 
 
 
@@ -74,33 +57,20 @@ class Rpm2Manager
 
         $response = ConnectToRpm2Facade::delete($this->rpm2Client);
 
-        if($response->status() == 200){
-
-            $pm2Process =  new Pm2ProcessDTO($response->collect()->first());
-            return $pm2Process;
-
-        }else{
-
-            throw new \HttpException("RPM2 Server Failed to process the request :  {$response->status()}");
-        }
-
+        return $this->handleResponse($response);
     }
 
 
     public function listAll() : Collection{
         $response = ConnectToRpm2Facade::getAll($this->rpm2Client);
 
-        if($response->status() == 200){
+        if($response->status() !== 200){
+            throw new \HttpException("RPM2 Server Failed to process the request :  {$response->status()}");
+        }
 
             return  $response->collect()->map(function ($item, $key) {
                 return new Pm2ProcessDTO($item);
             });
-
-        }else{
-
-            throw new \HttpException("RPM2 Server Failed to process the request :  {$response->status()}");
-        }
-
 
 
     }
@@ -111,19 +81,21 @@ class Rpm2Manager
 
         $response = ConnectToRpm2Facade::getInformationOf($this->rpm2Client);
 
-        if($response->status() == 200){
-
-            $pm2Process =  new Pm2ProcessDTO($response->collect()->first());
-            return $pm2Process;
-
-        }else{
-
-            throw new \HttpException("RPM2 Server Failed to process the request :  {$response->status()}");
-        }
+        return $this->handleResponse($response);
 
     }
 
 
+    private function handleResponse(Response $response):Pm2ProcessDTO{
+
+        if($response->status() !== 200){
+            throw new \HttpException("RPM2 Server Failed to process the request :  {$response->status()}");
+
+        }
+
+        return new Pm2ProcessDTO($response->collect()->toArray()[0]);
+
+    }
 
 
 
