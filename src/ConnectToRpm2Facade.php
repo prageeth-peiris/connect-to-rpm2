@@ -5,7 +5,7 @@ namespace PrageethPeiris\ConnectToRpm2;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \PrageethPeiris\ConnectToRpm2\Skeleton\SkeletonClass
+ * @mixin  ConnectToRpm2
  */
 class ConnectToRpm2Facade extends Facade
 {
