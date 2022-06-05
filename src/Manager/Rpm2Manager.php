@@ -27,9 +27,11 @@ class Rpm2Manager
 
 
 
-    public function run(string $scriptArguments = "") : Pm2ProcessDTO{
+    public function run(string $scriptArguments = null) : Pm2ProcessDTO{
 
-        $this->rpm2Client->setScriptArguments($scriptArguments);
+        if(!is_null($scriptArguments)){
+            $this->rpm2Client->setScriptArguments($scriptArguments);
+        }
 
         $response = ConnectToRpm2Facade::start($this->rpm2Client);
 
@@ -39,9 +41,11 @@ class Rpm2Manager
     }
 
 
-    public function stop(int $processName) : Pm2ProcessDTO{
+    public function stop(int $processName = 0) : Pm2ProcessDTO{
 
-        $this->rpm2Client->setProcessName($processName);
+        if($processName !== 0){
+            $this->rpm2Client->setProcessName($processName);
+        }
 
         $response = ConnectToRpm2Facade::stop($this->rpm2Client);
 
@@ -52,8 +56,10 @@ class Rpm2Manager
     }
 
 
-    public function kill(int $processName) : Pm2ProcessDTO{
-        $this->rpm2Client->setProcessName($processName);
+    public function kill(int $processName = 0) : Pm2ProcessDTO{
+        if($processName !== 0){
+            $this->rpm2Client->setProcessName($processName);
+        }
 
         $response = ConnectToRpm2Facade::delete($this->rpm2Client);
 
@@ -75,9 +81,11 @@ class Rpm2Manager
 
     }
 
-    public function check(int $processName) : Pm2ProcessDTO{
+    public function check(int $processName = 0) : Pm2ProcessDTO{
 
-        $this->rpm2Client->setProcessName($processName);
+        if($processName !== 0){
+            $this->rpm2Client->setProcessName($processName);
+        }
 
         $response = ConnectToRpm2Facade::getInformationOf($this->rpm2Client);
 
@@ -103,6 +111,12 @@ class Rpm2Manager
 
         return $this->rpm2Client;
 
+
+    }
+
+    public function setRpm2Client(Rpm2Client $rpm2Client):self{
+        $this->rpm2Client = $rpm2Client;
+        return $this;
 
     }
 
